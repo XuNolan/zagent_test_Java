@@ -1,21 +1,19 @@
-package org.example.openflow.entity;
+package org.example.openflow.entity.ovsdbParam;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.example.register.entity.LastInfos;
-import org.example.register.entity.RegisterRequest;
 import org.example.utils.RandomStringUtils;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @Builder
 @Accessors(chain = true)
 @ToString
-public class OvsdbRegisterEntity implements Serializable {
+public class OvsdbRegisterEntity implements OvsdbParam, Serializable {
+
     public String sn;
     public String password;
     public String mac_address;

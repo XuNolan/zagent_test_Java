@@ -32,7 +32,5 @@ public class OpenflowPkgEntity implements Serializable {
     public int length;
     public String jsonStr;
 
-    public byte[] OFPData;
-
 
 }

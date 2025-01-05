@@ -2,11 +2,9 @@ package org.example.cpe;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.example.openflow.entity.OvsdbRegisterEntity;
+import org.example.openflow.entity.ovsdbParam.OvsdbRegisterEntity;
 import org.example.register.entity.RegisterRequest;
 import org.example.utils.RandomStringUtils;
-
-import java.util.Random;
 
 @Data
 @Accessors(chain = true)

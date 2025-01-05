@@ -38,8 +38,7 @@ public class OpenflowCoder {
         if(openflowPkgEntity.header.type == 99){
             byteBuffer.putInt(openflowPkgEntity.length);
             byteBuffer.put(openflowPkgEntity.jsonStr.getBytes(StandardCharsets.UTF_8));
-        }else
-            byteBuffer.put(openflowPkgEntity.OFPData);
+        }
         byteBuffer.order(ByteOrder.BIG_ENDIAN);
         byte[] bytes = byteBuffer.array();
         try {
@@ -72,9 +71,6 @@ public class OpenflowCoder {
                     sb.append(dataInputStream.readUTF());
                 }
                 openflowPkgEntity.jsonStr = sb.toString();
-            } else {
-                openflowPkgEntity.OFPData = new byte[(int) openflowPkgEntity.header.length];
-                dataInputStream.read(openflowPkgEntity.OFPData);
             }
             return openflowPkgEntity;
         } catch (IOException e) {

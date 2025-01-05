@@ -3,12 +3,12 @@ package org.example.utils;
 import java.util.Random;
 
 public class RandomStringUtils {
-    public static String CAPITAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    public static String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+    public static String CAPITAL = "ABCDEF";
+    public static String LOWERCASE = "abcdef";
     public static String NUMBER = "0123456789";
 
     public static String getCapitalAndNumber(int length) {
-        return getRamdonString(length, true, false, false);
+        return getRamdonString(length, true, false, true);
     }
     public static String getNumber(int length) {
         return getRamdonString(length, false, false, true);

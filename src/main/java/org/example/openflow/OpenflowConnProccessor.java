@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.openflow.entity.OpenflowPkgEntity;
-import org.example.openflow.entity.OvsdbRegisterEntity;
+import org.example.openflow.entity.OvsdbPkg;
+import org.example.openflow.entity.ovsdbParam.OvsdbRegisterEntity;
+import org.example.utils.RandomStringUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -29,7 +31,8 @@ public class OpenflowConnProccessor {
         openflowCoder = new OpenflowCoder(in, out);
 
         OvsdbRegisterEntity ovsdbRegisterEntity = CpeInfo.toOvsdbRegisterEntity(cpeInfo).initRemains(token);
-        String jsonstr = JSON.toJSONString(ovsdbRegisterEntity);
+        OvsdbPkg ovsdbPkg = OvsdbPkg.builder().id(RandomStringUtils.getNumber(16)).method("dm.deviceRegister").params(ovsdbRegisterEntity).build();
+        String jsonstr = JSON.toJSONString(ovsdbPkg);
 
         OpenflowPkgEntity openflowPkgEntity = new OpenflowPkgEntity();
         openflowPkgEntity.getHeader().setVersion((byte) 4);
@@ -41,12 +44,13 @@ public class OpenflowConnProccessor {
         openflowPkgEntity.setJsonStr(jsonstr);
 
         log.info("jsonstr:{}",jsonstr);
-        log.info("ovsdbEntity:{}",ovsdbRegisterEntity);
+        log.info("ovsdbEntity:{}",ovsdbPkg);
         log.info("openflowPkg:{}",openflowPkgEntity);
         log.info("pkgLen:{}", openflowPkgEntity.getHeader().getLength());
         log.info("ovsdbLen:{}", openflowPkgEntity.getLength());
         openflowCoder.writeAndFlush(openflowPkgEntity);
 
+        log.info("write");
         while(true){
             OpenflowPkgEntity response = openflowCoder.read();
 
