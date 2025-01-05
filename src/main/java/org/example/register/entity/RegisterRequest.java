@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Data
 @Builder
 @Accessors(chain = true)
+@ToString
 public class RegisterRequest implements Serializable {
     private String id;
     private String loid;

@@ -1,7 +1,12 @@
 package org.example.register.entity;
 
+import lombok.Data;
+import lombok.ToString;
+
 import java.io.Serializable;
 
+@ToString
+@Data
 public class Result implements Serializable {
     private String controller_ip;
     private Double delay_period;

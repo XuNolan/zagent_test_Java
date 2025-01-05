@@ -2,6 +2,7 @@ package org.example.cpe;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.example.openflow.entity.OvsdbRegisterEntity;
 import org.example.register.entity.RegisterRequest;
 import org.example.utils.RandomStringUtils;
 
@@ -44,6 +45,14 @@ public class CpeInfo {
                 .mac_address(cpeInfo.getMac_address()).oui(cpeInfo.getOui()).duration(cpeInfo.getDuration())
                 .fw_version(cpeInfo.getFw_version()).hw_version(cpeInfo.getHw_version()).kit_version(cpeInfo.getKit_version())
                 .vendor(cpeInfo.getVendor()).model(cpeInfo.getModel())
+                .build();
+    }
+
+    public static OvsdbRegisterEntity toOvsdbRegisterEntity(CpeInfo cpeInfo) {
+        return OvsdbRegisterEntity.builder()
+                .sn(cpeInfo.getSn()).password(cpeInfo.getPassword()).mac_address(cpeInfo.getMac_address())
+                .duration(cpeInfo.getDuration()).fw_version(cpeInfo.getFw_version()).kit_version(cpeInfo.getKit_version())
+                .hw_version(cpeInfo.getHw_version()).model(cpeInfo.getModel()).vendor(cpeInfo.getVendor())
                 .build();
     }
 }
