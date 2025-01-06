@@ -30,12 +30,8 @@ public class OvsdbRegisterEntity implements OvsdbParam, Serializable {
     public OvsdbRegisterEntity initRemains(String token){
         this.setToken(token);
         this.setIs_initialize("true");
-        String datapath_id = RandomStringUtils.getCapitalAndNumber(16);
-        String newDatapath;
-        if(!Character.isDigit(datapath_id.charAt(0)) || datapath_id.charAt(0) > '7'){
-            newDatapath = "7"+datapath_id.substring(1);
-            this.setDatapath_id(newDatapath);
-        } else this.setDatapath_id(datapath_id);
+        String datapath_id = RandomStringUtils.getRamdonDatapathId();
+        this.setDatapath_id(datapath_id);
         return this;
     }
 }
