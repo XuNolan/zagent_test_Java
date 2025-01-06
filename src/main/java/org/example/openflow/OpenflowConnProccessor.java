@@ -3,8 +3,10 @@ package org.example.openflow;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
-import org.example.openflow.entity.OpenflowPkgEntity;
+import org.example.openflow.entity.openflow.OpenflowPkgEntity;
 import org.example.openflow.entity.OvsdbPkg;
+import org.example.openflow.entity.openflow.payload.OpenflowData;
+import org.example.openflow.entity.openflow.payload.OvsdbData;
 import org.example.openflow.entity.ovsdbParam.OvsdbRegisterEntity;
 import org.example.utils.RandomStringUtils;
 
@@ -40,19 +42,30 @@ public class OpenflowConnProccessor {
         openflowPkgEntity.getHeader().setLength((byte) 0);
         openflowPkgEntity.getHeader().setXid(0);
 
-        openflowPkgEntity.setLength(jsonstr.length()+OpenflowPkgEntity.OVSDBHEADERLEN);
-        openflowPkgEntity.setJsonStr(jsonstr);
+        OvsdbData ovsdbData = new OvsdbData();
+        ovsdbData.setLength(jsonstr.length()+OpenflowPkgEntity.OVSDBHEADERLEN);
+        ovsdbData.setJsonStr(jsonstr);
+        openflowPkgEntity.setPayload(ovsdbData);
 
         log.info("jsonstr:{}",jsonstr);
         log.info("ovsdbEntity:{}",ovsdbPkg);
         log.info("openflowPkg:{}",openflowPkgEntity);
         log.info("pkgLen:{}", openflowPkgEntity.getHeader().getLength());
-        log.info("ovsdbLen:{}", openflowPkgEntity.getLength());
+        log.info("ovsdbLen:{}", ovsdbData.getLength());
         openflowCoder.writeAndFlush(openflowPkgEntity);
 
-        log.info("write");
-        while(true){
-            OpenflowPkgEntity response = openflowCoder.read();
+
+        OpenflowPkgEntity response;
+
+        while((response = openflowCoder.read()) != null){
+            log.info("response:{}",response);
+            if(response.header.type == 99){
+                log.info(String.valueOf(response));
+                return;
+            }else if(response.header.type == 2){
+                response.header.setType((byte)3);
+                openflowCoder.writeAndFlush(response);
+            }
 
         }
 

@@ -1,7 +1,7 @@
-package org.example.openflow.entity;
+package org.example.openflow.entity.openflow;
 
 import lombok.*;
-import lombok.experimental.Accessors;
+import org.example.openflow.entity.openflow.payload.OpenflowPayload;
 
 import java.io.Serializable;
 
@@ -29,8 +29,7 @@ public class OpenflowPkgEntity implements Serializable {
     }
 
     public OFPHeader header;
-    public int length;
-    public String jsonStr;
+    OpenflowPayload payload;
 
 
 }

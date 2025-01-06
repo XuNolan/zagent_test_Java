@@ -28,7 +28,14 @@ public class OvsdbRegisterEntity implements OvsdbParam, Serializable {
     public String hw_version;
 
     public OvsdbRegisterEntity initRemains(String token){
-        this.setDatapath_id(RandomStringUtils.getCapitalAndNumber(16)).setIs_initialize("true").setToken(token);
+        this.setToken(token);
+        this.setIs_initialize("true");
+        String datapath_id = RandomStringUtils.getCapitalAndNumber(16);
+        String newDatapath;
+        if(!Character.isDigit(datapath_id.charAt(0)) || datapath_id.charAt(0) > '7'){
+            newDatapath = "7"+datapath_id.substring(1);
+            this.setDatapath_id(newDatapath);
+        } else this.setDatapath_id(datapath_id);
         return this;
     }
 }
