@@ -48,9 +48,11 @@ public class OpenflowCoder {
             byteBuffer.putShort(openflowPkgEntity.header.length);
             byteBuffer.putInt(openflowPkgEntity.header.xid);
             //payload；
-            byte[] datas = ((OpenflowData)openflowPkgEntity.getPayload()).getOpenflowData();
-            if(datas.length > 0)
-                byteBuffer.put(datas);
+            if (openflowPkgEntity.getPayload()!=null){
+                byte[] datas = ((OpenflowData)openflowPkgEntity.getPayload()).getOpenflowData();
+                if(datas != null && datas.length > 0)
+                    byteBuffer.put(datas);
+            }
         }
 
         byteBuffer.order(ByteOrder.BIG_ENDIAN);
@@ -92,13 +94,17 @@ public class OpenflowCoder {
                 }
                 ovsdbData.jsonStr = sb.toString();
             } else {
-                openflowPkgEntity.setPayload(new OpenflowData());
-                OpenflowData openflowData = (OpenflowData) openflowPkgEntity.getPayload();
-                byte[] datas = new byte[OpenflowPkgEntity.OFPHEADERLEN - openflowPkgEntity.header.length];
-                for(int i=OpenflowPkgEntity.OFPHEADERLEN;i<openflowPkgEntity.header.length;i++){
-                    datas[i] = dataInputStream.readByte();
+                OpenflowData openflowData = new OpenflowData();
+
+                byte[] datas = null;
+                if(openflowPkgEntity.header.length > OpenflowPkgEntity.OFPHEADERLEN) {
+                    int validLen =  openflowPkgEntity.header.length - OpenflowPkgEntity.OFPHEADERLEN;
+                    datas = new byte[validLen];
+                    for(int i=0;i<validLen;i++)
+                        datas[i] = dataInputStream.readByte();
                 }
                 openflowData.setOpenflowData(datas);
+                openflowPkgEntity.setPayload(openflowData);
             }
             return openflowPkgEntity;
         } catch (IOException e) {

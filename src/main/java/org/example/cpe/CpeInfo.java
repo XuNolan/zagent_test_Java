@@ -22,6 +22,7 @@ public class CpeInfo {
     private String kit_version;
     private String model;
     private String vendor;
+    private String datapathId;
 
     public static CpeInfo getRamdonCpe(){
         CpeInfo cpeInfo = CpeInfo.builder()

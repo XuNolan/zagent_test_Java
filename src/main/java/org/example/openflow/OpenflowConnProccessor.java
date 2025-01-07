@@ -19,7 +19,7 @@ import java.net.Socket;
 @Slf4j
 public class OpenflowConnProccessor {
 
-    private OpenflowCoder openflowCoder;
+    public OpenflowCoder openflowCoder;
 
     public boolean doOvsdbRegister(String ip, int port, String token, CpeInfo cpeInfo){
         Socket socket;
@@ -36,12 +36,13 @@ public class OpenflowConnProccessor {
         openflowCoder = new OpenflowCoder(in, out);
 
         OvsdbRegisterEntity ovsdbRegisterEntity = CpeInfo.toOvsdbRegisterEntity(cpeInfo).initRemains(token);
+        cpeInfo.setDatapathId(ovsdbRegisterEntity.datapath_id);//在这里设置回去是为了传出去。
         String id = RandomStringUtils.getNumber(16);
         OvsdbRequestPkg ovsdbRequestPkg = OvsdbRequestPkg.builder().id(id).method("dm.deviceRegister").params(new OvsdbParam[]{ovsdbRegisterEntity}).build();
         String jsonstr = JSON.toJSONString(ovsdbRequestPkg);
 
         OpenflowPkgEntity openflowPkgEntity = new OpenflowPkgEntity();
-        OFPHeader ofpHeader = new OFPHeader((byte)4, (byte)99, (byte)0, (byte)0);
+        OFPHeader ofpHeader = new OFPHeader((byte)4, (byte)99, (short) 0, 0);
 
         OvsdbData ovsdbData = new OvsdbData();
         ovsdbData.setLength(jsonstr.length()+OpenflowPkgEntity.OVSDBHEADERLEN);

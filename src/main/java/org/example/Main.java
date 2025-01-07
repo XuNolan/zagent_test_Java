@@ -3,11 +3,11 @@ package org.example;
 import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.openflow.OpenflowConnProccessor;
+import org.example.openflow.OpenflowHandShake;
 import org.example.register.Register;
 import org.example.register.entity.RegisterRequest;
 import org.example.register.entity.RegisterResponse;
 
-import java.sql.Time;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +21,7 @@ public class Main {
         System.out.println(registerResponse);
         assert registerResponse != null;
         int retryTime = registerResponse.getRetry_times();
+        OpenflowConnProccessor proccessor = null;
         for(int i=0; i<retryTime; i++) {
             if (Objects.equals(registerResponse.getCode(), "200000")) {
                 String ip = registerResponse.getResult().getController_ip();
@@ -33,7 +34,7 @@ public class Main {
                     e.printStackTrace();
                     return;
                 }
-                OpenflowConnProccessor proccessor = new OpenflowConnProccessor();
+                proccessor = new OpenflowConnProccessor();
                 if (proccessor.doOvsdbRegister(ip, port, token, cpeInfo)) {
                     log.info("OVSDB REGISTER SUCCESS, begin openflow handshake");
                     //开始openflow 握手；
@@ -47,6 +48,8 @@ public class Main {
                 }
             }
         }
-
+        assert proccessor != null;
+        OpenflowHandShake openflowHandShake = new OpenflowHandShake(proccessor.openflowCoder, cpeInfo.getDatapathId());
+        openflowHandShake.doOpenflowHandShakeWithServer();
     }
 }
