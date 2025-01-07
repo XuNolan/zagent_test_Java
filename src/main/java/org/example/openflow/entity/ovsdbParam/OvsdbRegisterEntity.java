@@ -30,7 +30,8 @@ public class OvsdbRegisterEntity implements OvsdbParam, Serializable {
     public OvsdbRegisterEntity initRemains(String token){
         this.setToken(token);
         this.setIs_initialize("true");
-        String datapath_id = RandomStringUtils.getRamdonDatapathId();
+        String[] macs = mac_address.split(":");
+        String datapath_id = "0000" + macs[0] + macs[1] + macs[2] + macs[3] + macs[4] + macs[5];
         this.setDatapath_id(datapath_id);
         return this;
     }
