@@ -10,7 +10,7 @@ import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbParam;
 @Builder
 @Accessors(chain = true)
 @ToString
-public class OvsdbPkg {
+public class OvsdbRequestPkg {
     String id;
     String method;
     OvsdbParam[] params;

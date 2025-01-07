@@ -1,14 +1,17 @@
 package org.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.openflow.OpenflowConnProccessor;
 import org.example.register.Register;
 import org.example.register.entity.RegisterRequest;
 import org.example.register.entity.RegisterResponse;
 
+import java.sql.Time;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class Main {
 
     public static void main(String[] args) {
@@ -17,20 +20,33 @@ public class Main {
         RegisterResponse registerResponse = Register.doRegister(registerRequest);
         System.out.println(registerResponse);
         assert registerResponse != null;
-        if(Objects.equals(registerResponse.getCode(), "200000")) {
-            String ip = registerResponse.getResult().getController_ip();
-            int port = registerResponse.getResult().getController_port();
-            String token = registerResponse.getResult().getToken();
-            double SleepTime = registerResponse.getResult().getDelay_period();
-            try {
-                TimeUnit.SECONDS.sleep((long) SleepTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                return;
+        int retryTime = registerResponse.getRetry_times();
+        for(int i=0; i<retryTime; i++) {
+            if (Objects.equals(registerResponse.getCode(), "200000")) {
+                String ip = registerResponse.getResult().getController_ip();
+                int port = registerResponse.getResult().getController_port();
+                String token = registerResponse.getResult().getToken();
+                double SleepTime = registerResponse.getResult().getDelay_period();
+                try {
+                    TimeUnit.SECONDS.sleep((long) SleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                OpenflowConnProccessor proccessor = new OpenflowConnProccessor();
+                if (proccessor.doOvsdbRegister(ip, port, token, cpeInfo)) {
+                    log.info("OVSDB REGISTER SUCCESS, begin openflow handshake");
+                    //开始openflow 握手；
+                    break;
+                }
+            } else {
+                try {
+                    TimeUnit.SECONDS.sleep(registerResponse.getConnection_retry_interval());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            OpenflowConnProccessor proccessor = new OpenflowConnProccessor();
-            proccessor.doOvsdbRegister(ip, port, token, cpeInfo);
-        }else
-            return;
+        }
+
     }
 }

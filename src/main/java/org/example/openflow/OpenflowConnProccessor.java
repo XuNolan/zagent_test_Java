@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.openflow.entity.openflow.OFPHeader;
 import org.example.openflow.entity.openflow.OpenflowPkgEntity;
-import org.example.openflow.entity.ovsdb.OvsdbPkg;
+import org.example.openflow.entity.ovsdb.OvsdbRequestPkg;
 import org.example.openflow.entity.openflow.payload.OvsdbData;
+import org.example.openflow.entity.ovsdb.OvsdbRespPkg;
 import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbParam;
 import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbRegisterEntity;
+import org.example.openflow.entity.ovsdb.result.OvsdbRegisterResult;
 import org.example.utils.RandomStringUtils;
 
 import java.io.*;
@@ -19,7 +21,7 @@ public class OpenflowConnProccessor {
 
     private OpenflowCoder openflowCoder;
 
-    public void doOvsdbRegister(String ip, int port, String token, CpeInfo cpeInfo){
+    public boolean doOvsdbRegister(String ip, int port, String token, CpeInfo cpeInfo){
         Socket socket;
         OutputStream out;
         InputStream in;
@@ -35,8 +37,8 @@ public class OpenflowConnProccessor {
 
         OvsdbRegisterEntity ovsdbRegisterEntity = CpeInfo.toOvsdbRegisterEntity(cpeInfo).initRemains(token);
         String id = RandomStringUtils.getNumber(16);
-        OvsdbPkg ovsdbPkg = OvsdbPkg.builder().id(id).method("dm.deviceRegister").params(new OvsdbParam[]{ovsdbRegisterEntity}).build();
-        String jsonstr = JSON.toJSONString(ovsdbPkg);
+        OvsdbRequestPkg ovsdbRequestPkg = OvsdbRequestPkg.builder().id(id).method("dm.deviceRegister").params(new OvsdbParam[]{ovsdbRegisterEntity}).build();
+        String jsonstr = JSON.toJSONString(ovsdbRequestPkg);
 
         OpenflowPkgEntity openflowPkgEntity = new OpenflowPkgEntity();
         OFPHeader ofpHeader = new OFPHeader((byte)4, (byte)99, (byte)0, (byte)0);
@@ -49,7 +51,7 @@ public class OpenflowConnProccessor {
         openflowPkgEntity.setPayload(ovsdbData);
 
         log.info("jsonstr:{}",jsonstr);
-        log.info("ovsdbEntity:{}",ovsdbPkg);
+        log.info("ovsdbEntity:{}", ovsdbRequestPkg);
         log.info("openflowPkg:{}",openflowPkgEntity);
         log.info("pkgLen:{}", openflowPkgEntity.getHeader().getLength());
         log.info("ovsdbLen:{}", ovsdbData.getLength());
@@ -84,10 +86,15 @@ public class OpenflowConnProccessor {
 
             if(response.header.type == 99){
 //                log.info(String.valueOf(response));
-
-
-
-                break;
+                OvsdbData responseOvsdbData = (OvsdbData)response.payload;
+                OvsdbRespPkg ovsdbRespPkg = JSON.parseObject(responseOvsdbData.getJsonStr(), OvsdbRespPkg.class);
+                if(!ovsdbRespPkg.getId().equals(id)){
+                    log.info("getResp but id not equal. msg{}", ovsdbRespPkg);
+                    continue;
+                }
+                OvsdbRegisterResult ovsdbRegisterResult = (OvsdbRegisterResult) ovsdbRespPkg.getResult()[0];
+                log.info("OVSDB REGISTER SUCCESS. msg{}", ovsdbRegisterResult);
+                return true;
             }else if(response.header.type == 2){ //reply
                 response.header.setType((byte)3);
 
@@ -101,8 +108,6 @@ public class OpenflowConnProccessor {
                     }
                 }
             }
-
         }
-
     }
 }
