@@ -1,10 +1,9 @@
-package org.example.openflow.entity.ovsdbParam;
+package org.example.openflow.entity.ovsdb.ovsdbParam;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.example.utils.RandomStringUtils;
 
 import java.io.Serializable;
 

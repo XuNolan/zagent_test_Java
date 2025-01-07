@@ -2,7 +2,7 @@ package org.example.cpe;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.example.openflow.entity.ovsdbParam.OvsdbRegisterEntity;
+import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbRegisterEntity;
 import org.example.register.entity.RegisterRequest;
 import org.example.utils.RandomStringUtils;
 

@@ -1,10 +1,10 @@
-package org.example.openflow.entity;
+package org.example.openflow.entity.ovsdb;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.example.openflow.entity.ovsdbParam.OvsdbParam;
+import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbParam;
 
 @Data
 @Builder

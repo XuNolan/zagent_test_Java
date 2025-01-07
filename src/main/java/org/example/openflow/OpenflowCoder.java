@@ -1,6 +1,7 @@
 package org.example.openflow;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.openflow.entity.openflow.OFPHeader;
 import org.example.openflow.entity.openflow.OpenflowPkgEntity;
 import org.example.openflow.entity.openflow.payload.OpenflowData;
 import org.example.openflow.entity.openflow.payload.OpenflowPayload;
@@ -25,7 +26,7 @@ public class OpenflowCoder {
         this.outputStream = outputStream;
     }
 
-    public int writeAndFlush(OpenflowPkgEntity openflowPkgEntity){
+    public int writeAndFlush(OpenflowPkgEntity openflowPkgEntity) throws IOException {
         ByteBuffer byteBuffer;
 
         if(openflowPkgEntity.header.type == 99){
@@ -65,18 +66,22 @@ public class OpenflowCoder {
             } catch (IOException ex) {
                 log.error(ex.getMessage());
             }
-            return 0;
+            throw new IOException(e);
         }
         return bytes.length;
     }
 
-    public OpenflowPkgEntity read(){
+    public OpenflowPkgEntity read() throws IOException {
         OpenflowPkgEntity openflowPkgEntity = new OpenflowPkgEntity();
         try {
-            openflowPkgEntity.header.version = dataInputStream.readByte();
-            openflowPkgEntity.header.type = dataInputStream.readByte();
-            openflowPkgEntity.header.length = dataInputStream.readShort();
-            openflowPkgEntity.header.xid = dataInputStream.readInt();
+            OFPHeader header = new OFPHeader(
+                    dataInputStream.readByte(),
+                    dataInputStream.readByte(),
+                    dataInputStream.readShort(),
+                    dataInputStream.readInt());
+
+            openflowPkgEntity.setHeader(header);
+
             if((int) openflowPkgEntity.header.type == 99){
                 openflowPkgEntity.setPayload(new OvsdbData());
                 OvsdbData ovsdbData = (OvsdbData) openflowPkgEntity.getPayload();
@@ -98,13 +103,14 @@ public class OpenflowCoder {
             return openflowPkgEntity;
         } catch (IOException e) {
             log.error(e.getMessage());
+            log.error("close socket streams");
             try {
                 dataInputStream.close();
                 outputStream.close();
             } catch (IOException ex) {
                 log.error(ex.getMessage());
             }
+            throw new IOException(e);
         }
-        return null;
     }
 }

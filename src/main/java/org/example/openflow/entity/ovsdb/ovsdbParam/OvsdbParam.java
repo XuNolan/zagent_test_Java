@@ -1,4 +1,4 @@
-package org.example.openflow.entity.ovsdbParam;
+package org.example.openflow.entity.ovsdb.ovsdbParam;
 
 import java.io.Serializable;
 
