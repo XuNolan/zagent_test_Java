@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.openflow.entity.openflow.OFPHeader;
 import org.example.openflow.entity.openflow.OpenflowPkgEntity;
 import org.example.openflow.entity.openflow.payload.OpenflowData;
-import org.example.openflow.entity.openflow.payload.OpenflowPayload;
 import org.example.openflow.entity.openflow.payload.OvsdbData;
 
 import java.io.DataInputStream;
@@ -88,7 +87,7 @@ public class OpenflowCoder {
                 openflowPkgEntity.setPayload(new OvsdbData());
                 OvsdbData ovsdbData = (OvsdbData) openflowPkgEntity.getPayload();
                 ovsdbData.length = dataInputStream.readInt();
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 for(int i=0;i< ovsdbData.length;i++){
                     sb.append(dataInputStream.readUTF());
                 }

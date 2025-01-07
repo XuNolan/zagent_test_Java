@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -45,7 +44,7 @@ public class Register {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            log.info("response:{}", response.toString());
+            log.info("response:{}", response);
 
             return JSON.parseObject(response.toString(), RegisterResponse.class);
 

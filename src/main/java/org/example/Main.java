@@ -31,7 +31,7 @@ public class Main {
                 try {
                     TimeUnit.SECONDS.sleep((long) SleepTime);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     return;
                 }
                 proccessor = new OpenflowConnProccessor();

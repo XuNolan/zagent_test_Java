@@ -25,12 +25,11 @@ public class CpeInfo {
     private String datapathId;
 
     public static CpeInfo getRamdonCpe(){
-        CpeInfo cpeInfo = CpeInfo.builder()
+        return CpeInfo.builder()
                         .loid(null).password(RandomStringUtils.getCapitalAndNumber(12)).sn(RandomStringUtils.getNumber(15))
                         .oui(RandomStringUtils.getCapitalAndNumber(6)).ip_address("10.1.80.26").mac_address(RandomStringUtils.getRamdonMacAddress())
                         .duration("5521").fw_version("V6F4.AA1.01").hw_version("HX6-FM1_V1").kit_version("1.1.1").model("HX6-FM1").vendor("CMDC")
                 .build();
-        return cpeInfo;
 
     }
 

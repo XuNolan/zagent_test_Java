@@ -3,7 +3,7 @@ package org.example.utils;
 public class HexStringUtils {
 
     public static byte[] hexTobytes(String hex) {
-        if (hex.length() < 1) {
+        if (hex.isEmpty()) {
             return null;
         } else {
             byte[] result = new byte[hex.length() / 2];

@@ -1,7 +1,6 @@
 package org.example.openflow;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.cpe.CpeInfo;
 import org.example.openflow.entity.openflow.OFPHeader;
 import org.example.openflow.entity.openflow.OpenflowPkgEntity;
 import org.example.openflow.entity.openflow.payload.OpenflowData;
