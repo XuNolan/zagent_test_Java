@@ -13,5 +13,5 @@ import org.example.openflow.entity.ovsdbParam.OvsdbParam;
 public class OvsdbPkg {
     String id;
     String method;
-    OvsdbParam params;
+    OvsdbParam[] params;
 }

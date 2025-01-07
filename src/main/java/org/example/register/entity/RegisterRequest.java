@@ -23,7 +23,7 @@ public class RegisterRequest implements Serializable {
     private String ip_address;
     private String mac_address;
     private String oui;
-    private Integer duration;
+    private String duration;
     @JSONField(name = "is_initialize")
     private boolean is_initialize;
     private String fw_version;

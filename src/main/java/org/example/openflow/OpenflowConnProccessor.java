@@ -7,6 +7,7 @@ import org.example.openflow.entity.openflow.OpenflowPkgEntity;
 import org.example.openflow.entity.OvsdbPkg;
 import org.example.openflow.entity.openflow.payload.OpenflowData;
 import org.example.openflow.entity.openflow.payload.OvsdbData;
+import org.example.openflow.entity.ovsdbParam.OvsdbParam;
 import org.example.openflow.entity.ovsdbParam.OvsdbRegisterEntity;
 import org.example.utils.RandomStringUtils;
 
@@ -33,7 +34,7 @@ public class OpenflowConnProccessor {
         openflowCoder = new OpenflowCoder(in, out);
 
         OvsdbRegisterEntity ovsdbRegisterEntity = CpeInfo.toOvsdbRegisterEntity(cpeInfo).initRemains(token);
-        OvsdbPkg ovsdbPkg = OvsdbPkg.builder().id(RandomStringUtils.getNumber(16)).method("dm.deviceRegister").params(ovsdbRegisterEntity).build();
+        OvsdbPkg ovsdbPkg = OvsdbPkg.builder().id(RandomStringUtils.getNumber(16)).method("dm.deviceRegister").params(new OvsdbParam[]{ovsdbRegisterEntity}).build();
         String jsonstr = JSON.toJSONString(ovsdbPkg);
 
         OpenflowPkgEntity openflowPkgEntity = new OpenflowPkgEntity();

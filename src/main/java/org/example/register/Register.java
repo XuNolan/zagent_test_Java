@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class Register {
-    public static String url = "http://10.1.19.51:8081/loidAuth";
+    public static String url = "http://10.1.64.16:38081/loidAuth";
     public static RegisterResponse doRegister(RegisterRequest registerRequest){
         try {
             URL urlObj = new URL(url);
