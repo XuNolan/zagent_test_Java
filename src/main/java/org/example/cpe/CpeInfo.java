@@ -2,8 +2,9 @@ package org.example.cpe;
 
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbRegisterEntity;
-import org.example.register.entity.RegisterRequest;
+import org.example.refactor.sprocess.protocol.coder.ReformedOpenflowCoder;
+import org.example.ovsdb.entity.request.ovsdbParam.OvsdbRegisterEntity;
+import org.example.refactor.sprocess.httpRegister.entity.RegisterRequest;
 import org.example.utils.RandomStringUtils;
 
 @Data
@@ -24,13 +25,23 @@ public class CpeInfo {
     private String vendor;
     private String datapathId;
 
-    public static CpeInfo getRamdonCpe(){
-        return CpeInfo.builder()
-                        .loid(null).password(RandomStringUtils.getCapitalAndNumber(12)).sn("092450775319979")
-                        .oui(RandomStringUtils.getCapitalAndNumber(6)).ip_address("10.1.80.26").mac_address(RandomStringUtils.getRamdonMacAddress())
-                        .duration("5521").fw_version("V6F4.AA1.01").hw_version("HX6-FM1_V1").kit_version("1.1.1").model("HX6-FM1").vendor("CMDC")
-                .build();
+    @Setter
+    @Getter
+    private ReformedOpenflowCoder serverReformedOpenflowCoder;
 
+
+
+    private static CpeInfo cpeInfo;
+
+    static {
+        cpeInfo = CpeInfo.builder()
+                .loid(null).password(RandomStringUtils.getCapitalAndNumber(12)).sn("092450775319979")
+                .oui(RandomStringUtils.getCapitalAndNumber(6)).ip_address("10.1.80.26").mac_address(RandomStringUtils.getRamdonMacAddress())
+                .duration("5521").fw_version("V6F4.AA1.01").hw_version("HX6-FM1_V1").kit_version("1.1.1").model("HX6-FM1").vendor("CMDC")
+                .build();
+    }
+    public static CpeInfo getCpeInfo() {
+        return cpeInfo;
     }
 
     public static RegisterRequest toRegisterRequest(CpeInfo cpeInfo) {

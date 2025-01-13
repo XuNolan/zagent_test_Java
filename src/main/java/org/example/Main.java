@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.openflow.OpenflowConnProccessor;
 import org.example.openflow.OpenflowHandShake;
-import org.example.register.Register;
-import org.example.register.entity.RegisterRequest;
-import org.example.register.entity.RegisterResponse;
+import org.example.refactor.sprocess.httpRegister.HttpRegister;
+import org.example.refactor.sprocess.httpRegister.entity.RegisterRequest;
+import org.example.refactor.sprocess.httpRegister.entity.RegisterResponse;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) {
         CpeInfo cpeInfo = CpeInfo.getRamdonCpe();
         RegisterRequest registerRequest = CpeInfo.toRegisterRequest(cpeInfo).initRemains();
-        RegisterResponse registerResponse = Register.doRegister(registerRequest);
+        RegisterResponse registerResponse = HttpRegister.doRegister(registerRequest);
         System.out.println(registerResponse);
         assert registerResponse != null;
         int retryTime = registerResponse.getRetry_times();
@@ -51,7 +51,7 @@ public class Main {
             }
         }
         assert proccessor != null;
-        OpenflowHandShake openflowHandShake = new OpenflowHandShake(proccessor.openflowCoder, cpeInfo.getDatapathId());
+        OpenflowHandShake openflowHandShake = new OpenflowHandShake(proccessor.reformedOpenflowCoder, cpeInfo.getDatapathId());
         openflowHandShake.doOpenflowHandShakeWithServer();
     }
 }
