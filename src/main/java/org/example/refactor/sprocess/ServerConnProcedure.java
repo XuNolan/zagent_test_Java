@@ -43,7 +43,7 @@ public class ServerConnProcedure {
     }
 
 
-    public void consistProcedure(){
+    private void consistProcedure(){
 
     }
 
