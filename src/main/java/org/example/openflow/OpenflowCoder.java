@@ -38,7 +38,7 @@ public class OpenflowCoder {
             byteBuffer.putInt(openflowPkgEntity.header.xid);
             //payload；
             byteBuffer.putInt(ovsdbData.length);
-            byteBuffer.put(ovsdbData.jsonStr.getBytes(StandardCharsets.UTF_8));
+            byteBuffer.put(ovsdbData.jsonStr.getBytes(StandardCharsets.US_ASCII));
         } else {
             byteBuffer = ByteBuffer.allocate(openflowPkgEntity.header.length);
             //头部；
@@ -84,15 +84,21 @@ public class OpenflowCoder {
             openflowPkgEntity.setHeader(header);
 
             if((int) openflowPkgEntity.header.type == 99){
-                openflowPkgEntity.setPayload(new OvsdbData());
-                OvsdbData ovsdbData = (OvsdbData) openflowPkgEntity.getPayload();
+                log.info("read ovsdb pkg, header: {}", header);
+                OvsdbData ovsdbData = new OvsdbData();
+
                 ovsdbData.length = dataInputStream.readInt();
-                StringBuilder sb = new StringBuilder();
-                for(int i=0;i< ovsdbData.length;i++){
-                    sb.append(dataInputStream.readUTF());
-                }
-                ovsdbData.jsonStr = sb.toString();
+
+                int jsonStrLen = ovsdbData.length-OpenflowPkgEntity.OVSDBHEADERLEN;
+                byte[] jsonStrData = new byte[jsonStrLen];
+                int readn = dataInputStream.read(jsonStrData, 0, jsonStrLen);
+                log.info("read byte {}", readn);
+
+                ovsdbData.jsonStr = new String(jsonStrData, 0, jsonStrLen, StandardCharsets.US_ASCII);
+                openflowPkgEntity.setPayload(ovsdbData);
             } else {
+                log.info("read openflow pkg, header: {}", header);
+
                 OpenflowData openflowData = new OpenflowData();
 
                 byte[] datas = null;

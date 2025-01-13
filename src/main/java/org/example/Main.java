@@ -28,6 +28,7 @@ public class Main {
                 int port = registerResponse.getResult().getController_port();
                 String token = registerResponse.getResult().getToken();
                 double SleepTime = registerResponse.getResult().getDelay_period();
+                log.info("http register success, sleep {} seconds", SleepTime);
                 try {
                     TimeUnit.SECONDS.sleep((long) SleepTime);
                 } catch (InterruptedException e) {
@@ -41,6 +42,7 @@ public class Main {
                     break;
                 }
             } else {
+                log.info("fail, msg:{}, sleep seconds {}", registerResponse, registerResponse.getConnection_retry_interval());
                 try {
                     TimeUnit.SECONDS.sleep(registerResponse.getConnection_retry_interval());
                 } catch (InterruptedException e) {

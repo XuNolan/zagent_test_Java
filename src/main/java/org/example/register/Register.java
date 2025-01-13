@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class Register {
+    //    public static String url = "http://10.1.19.51:8081/loidAuth";
     public static String url = "http://10.1.64.16:38081/loidAuth";
     public static RegisterResponse doRegister(RegisterRequest registerRequest){
         try {
@@ -29,7 +30,7 @@ public class Register {
             log.info("jsonData:{}", jsonData);
 
             OutputStream os = conn.getOutputStream();
-            byte[] bytes = jsonData.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = jsonData.getBytes(StandardCharsets.US_ASCII);
             os.write(bytes, 0, bytes.length);
             os.flush();
 

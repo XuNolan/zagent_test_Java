@@ -10,7 +10,7 @@ import org.example.openflow.entity.openflow.payload.OvsdbData;
 import org.example.openflow.entity.ovsdb.OvsdbRespPkg;
 import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbParam;
 import org.example.openflow.entity.ovsdb.ovsdbParam.OvsdbRegisterEntity;
-import org.example.openflow.entity.ovsdb.result.OvsdbRegisterResult;
+import org.example.openflow.entity.ovsdb.result.OVSDBRegiserResult;
 import org.example.utils.RandomStringUtils;
 
 import java.io.*;
@@ -81,9 +81,8 @@ public class OpenflowConnProccessor {
                 }
             }
 
-            log.info("response:{}",response);
-
             assert response != null;
+            log.info("response:{}",response);
 
             if(response.header.type == 99){
 //                log.info(String.valueOf(response));
@@ -93,7 +92,7 @@ public class OpenflowConnProccessor {
                     log.info("getResp but id not equal. msg{}", ovsdbRespPkg);
                     continue;
                 }
-                OvsdbRegisterResult ovsdbRegisterResult = (OvsdbRegisterResult) ovsdbRespPkg.getResult()[0];
+                OVSDBRegiserResult ovsdbRegisterResult = ovsdbRespPkg.getResult()[0];
                 log.info("OVSDB REGISTER SUCCESS. msg{}", ovsdbRegisterResult);
                 return true;
             }else if(response.header.type == 2){ //reply
