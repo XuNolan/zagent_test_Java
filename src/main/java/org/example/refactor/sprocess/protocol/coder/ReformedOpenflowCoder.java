@@ -1,7 +1,9 @@
 package org.example.refactor.sprocess.protocol.coder;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.OFPHeader;
+import org.example.refactor.sprocess.protocol.reformedOpenflow.OFPTType;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.ReformedOpenflowPkgEntity;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.payload.ReformedOpenflowData;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.payload.ReformedOvsdbData;
@@ -10,25 +12,29 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
+@Getter
 public class ReformedOpenflowCoder {
 
+    Socket socket;
     DataInputStream dataInputStream;
     OutputStream outputStream;
 
-    public ReformedOpenflowCoder(InputStream inputStream, OutputStream outputStream) {
+    public ReformedOpenflowCoder(InputStream inputStream, OutputStream outputStream, Socket socket) {
         this.dataInputStream = new DataInputStream(inputStream);
         this.outputStream = outputStream;
+        this.socket = socket;
     }
 
     public int writeAndFlush(ReformedOpenflowPkgEntity reformedOpenflowPkgEntity) throws IOException {
         ByteBuffer byteBuffer;
 
-        if(reformedOpenflowPkgEntity.header.type == 99){
+        if(reformedOpenflowPkgEntity.header.type == OFPTType.OFPT_OVSDB.getValue()){
             ReformedOvsdbData reformedOvsdbData = (ReformedOvsdbData) reformedOpenflowPkgEntity.getPayload();
             byteBuffer = ByteBuffer.allocate(reformedOvsdbData.getLength());
             //头部；
@@ -83,7 +89,7 @@ public class ReformedOpenflowCoder {
 
             reformedOpenflowPkgEntity.setHeader(header);
 
-            if((int) reformedOpenflowPkgEntity.header.type == 99){
+            if(reformedOpenflowPkgEntity.header.type == org.example.refactor.sprocess.protocol.reformedOpenflow.OFPTType.OFPT_OVSDB.getValue()){
                 log.info("read ovsdb pkg, header: {}", header);
                 ReformedOvsdbData reformedOvsdbData = new ReformedOvsdbData();
 

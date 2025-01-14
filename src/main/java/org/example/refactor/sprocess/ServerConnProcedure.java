@@ -6,6 +6,8 @@ import org.example.refactor.sprocess.httpRegister.HttpRegister;
 import org.example.refactor.sprocess.httpRegister.entity.RegisterRequest;
 import org.example.refactor.sprocess.httpRegister.entity.RegisterResponse;
 import org.example.refactor.sprocess.ovsdbRegister.OvsdbRegister;
+import org.example.refactor.sprocess.protocol.coder.ReformedOpenflowCoder;
+import org.example.refactor.sprocess.protocol.reformedOpenflow.ReformedOpenflowPkgEntity;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -18,6 +20,9 @@ public class ServerConnProcedure {
     private String httpRegisterPort = "8080";
     private String httpUrlPrefix = "http://";
     private String httpUrl = "/loidAuth";
+
+
+    private ReformedOpenflowCoder reformedOpenflowCoder;
 
     public void doServerConnProcedure() {
         RegisterResponse registerResponse;
@@ -38,13 +43,33 @@ public class ServerConnProcedure {
         }
 
         //todo: 前置检查其他另一侧代理是否成功。
-        consistProcedure();
-
+        try {
+            consistProcedure();
+        } catch (Exception e) {
+            log.error("consistency fail , error:{}", e.getMessage());
+            return;
+        }
     }
 
 
-    private void consistProcedure(){
-
+    private void consistProcedure() throws Exception {
+        while(true){
+            ReformedOpenflowPkgEntity reformedOpenflowPkgEntity;
+            reformedOpenflowPkgEntity = reformedOpenflowCoder.read();
+            ReformedOpenflowPkgEntity response = ServerPkgDispatcher.dispatch(reformedOpenflowPkgEntity);
+            if(response != null){
+                try {
+                    reformedOpenflowCoder.writeAndFlush(response);
+                }catch (IOException e) {
+                    try {
+                        reformedOpenflowCoder.getSocket().close();
+                    } catch (IOException ex) {
+                        log.error("socket close failed, {}", ex.getMessage());
+                    }
+                    throw new Exception("openflow coder write failed");
+                }
+            }
+        }
     }
 
 
@@ -85,6 +110,9 @@ public class ServerConnProcedure {
                 }
 
                 OvsdbRegister ovsdbRegister = new OvsdbRegister(ip, port, token);
+                reformedOpenflowCoder = ovsdbRegister.doReformedOpenflowConnEstablish();
+                CpeInfo.getCpeInfo().setServerReformedOpenflowCoder(reformedOpenflowCoder);
+
                 try {
                     ovsdbRegister.doRegister();
                 }catch (Exception e){

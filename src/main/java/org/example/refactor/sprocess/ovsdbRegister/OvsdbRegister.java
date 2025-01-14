@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.cpe.CpeInfo;
 import org.example.ovsdb.entity.response.result.OvsdbRegisterResult;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.OFPHeader;
+import org.example.refactor.sprocess.protocol.reformedOpenflow.OFPTType;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.ReformedOpenflowPkgEntity;
 import org.example.refactor.sprocess.protocol.reformedOpenflow.payload.ReformedOvsdbData;
 import org.example.ovsdb.entity.request.OvsdbRequestPkg;
@@ -35,13 +36,12 @@ public class OvsdbRegister {
         this.ip = ip;
         this.port = port;
         this.token = token;
-        this.coder = doReformedOpenflowConnEstablish();
     }
 
     private ReformedOpenflowCoder coder;
     private String requestId;
 
-    private ReformedOpenflowCoder doReformedOpenflowConnEstablish(){
+    public ReformedOpenflowCoder doReformedOpenflowConnEstablish(){
         OutputStream out;
         InputStream in;
         try {
@@ -52,9 +52,8 @@ public class OvsdbRegister {
             log.error("ovsdb register socket conn failed, {}",e.getMessage());
             throw new RuntimeException(e);
         }
-        CpeInfo cpeInfo = CpeInfo.getCpeInfo();
-        ReformedOpenflowCoder reformedOpenflowCoder =  new ReformedOpenflowCoder(in, out);
-        cpeInfo.setServerReformedOpenflowCoder(reformedOpenflowCoder);
+        ReformedOpenflowCoder reformedOpenflowCoder =  new ReformedOpenflowCoder(in, out, socket);
+        this.coder = reformedOpenflowCoder;
         return reformedOpenflowCoder;
     }
 
@@ -93,7 +92,7 @@ public class OvsdbRegister {
             }
             log.info("response:{}",response);
 
-            if(response.header.type == 99){
+            if(response.header.type == OFPTType.OFPT_OVSDB.getValue()){
                 ReformedOvsdbData responseReformedOvsdbData = (ReformedOvsdbData)response.payload;
                 JSONObject jsonObject = JSON.parseObject(responseReformedOvsdbData.getJsonStr());
                 String id = jsonObject.getString("id");
@@ -114,8 +113,8 @@ public class OvsdbRegister {
                     }
                 }
 
-            }else if(response.header.type == 2){ //echo
-                response.header.setType((byte)3);
+            }else if(response.header.type == OFPTType.OFPT_ECHO_REQUEST.getValue()){ //echo
+                response.header.setType(OFPTType.OFPT_ECHO_REPLY.getValue());
                 try {
                     coder.writeAndFlush(response);
                 }catch (IOException e) {
@@ -139,7 +138,7 @@ public class OvsdbRegister {
         String jsonstr = JSON.toJSONString(ovsdbRequestPkg);
 
         ReformedOpenflowPkgEntity reformedOpenflowPkgEntity = new ReformedOpenflowPkgEntity();
-        OFPHeader ofpHeader = new OFPHeader((byte)4, (byte)99, (short) 0, 0);
+        OFPHeader ofpHeader = OFPHeader.getHeaderOfOvsdb();
 
         ReformedOvsdbData reformedOvsdbData = new ReformedOvsdbData();
         reformedOvsdbData.setLength(jsonstr.length()+ ReformedOpenflowPkgEntity.OVSDBHEADERLEN);
