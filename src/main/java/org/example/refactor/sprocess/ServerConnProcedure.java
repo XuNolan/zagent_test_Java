@@ -16,10 +16,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ServerConnProcedure {
 
+
     private String httpRegisterIP = "127.0.0.1";
     private String httpRegisterPort = "8080";
     private String httpUrlPrefix = "http://";
     private String httpUrl = "/loidAuth";
+    private String httpRegisterUrl = "http://10.1.64.16:38081/loidAuth";
+//    private String httpRegisterUrl = "http://10.1.19.51:8081/loidAuth";
 
 
     private ReformedOpenflowCoder reformedOpenflowCoder;
@@ -74,7 +77,7 @@ public class ServerConnProcedure {
 
 
     private RegisterResponse doHttpRegister() throws Exception {
-        String httpRegisterUrl = httpUrlPrefix + httpRegisterIP + httpRegisterPort + httpUrl;
+//        String httpRegisterUrl = httpUrlPrefix + httpRegisterIP + httpRegisterPort + httpUrl;
         CpeInfo cpeInfo = CpeInfo.getCpeInfo();
         RegisterRequest registerRequest = CpeInfo.toRegisterRequest(cpeInfo).initRemains();
         RegisterResponse registerResponse;
