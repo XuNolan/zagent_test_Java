@@ -21,8 +21,8 @@ public class ServerConnProcedure {
     private String httpRegisterPort = "8080";
     private String httpUrlPrefix = "http://";
     private String httpUrl = "/loidAuth";
-    private String httpRegisterUrl = "http://10.1.64.16:38081/loidAuth";
-//    private String httpRegisterUrl = "http://10.1.19.51:8081/loidAuth";
+//    private String httpRegisterUrl = "http://10.1.64.16:38081/loidAuth";
+    private String httpRegisterUrl = "http://10.1.19.51:8081/loidAuth";
 
 
     private ReformedOpenflowCoder reformedOpenflowCoder;

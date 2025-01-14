@@ -2,6 +2,7 @@ package org.example.cpe;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.example.cprocess.protocal.coder.OvsdbCoder;
 import org.example.refactor.sprocess.protocol.coder.ReformedOpenflowCoder;
 import org.example.ovsdb.entity.request.ovsdbParam.OvsdbRegisterEntity;
 import org.example.refactor.sprocess.httpRegister.entity.RegisterRequest;
@@ -29,7 +30,13 @@ public class CpeInfo {
     @Getter
     private ReformedOpenflowCoder serverReformedOpenflowCoder;
 
+    @Setter
+    @Getter
+    private ReformedOpenflowCoder terminalOpenflowCoder;
 
+    @Setter
+    @Getter
+    private OvsdbCoder ovsdbCoder;
 
     private static CpeInfo cpeInfo;
 
